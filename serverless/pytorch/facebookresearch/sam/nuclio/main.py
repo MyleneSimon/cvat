@@ -6,6 +6,7 @@ import json
 import base64
 from PIL import Image
 import io
+import tifffile
 from model_handler import ModelHandler
 
 def init_context(context):
@@ -18,7 +19,9 @@ def handler(context, event):
     context.logger.info("call handler")
     data = event.body
     buf = io.BytesIO(base64.b64decode(data["image"]))
-    image = Image.open(buf)
+    
+    image = Image.fromarray(tifffile.imread(buf))
+    # image = Image.open(buf)
     image = image.convert("RGB")  #  to make sure image comes in RGB
     features = context.user_data.model.handle(image)
 
